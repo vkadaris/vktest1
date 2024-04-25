@@ -1,0 +1,1202 @@
+{
+   "dataFlow": {
+      "creationTimeStamp": null,
+      "modifiedTimeStamp": null,
+      "createdBy": null,
+      "modifiedBy": null,
+      "version": 2,
+      "id": "683d92e7-ad29-452c-9f2d-a39431939249",
+      "name": "Lookup step test",
+      "description": null,
+      "links": [],
+      "nodes": {
+         "SRC_TABLE_NODE": {
+            "nodeType": "table",
+            "version": 1,
+            "id": "SRC_TABLE_NODE",
+            "name": "LKUP_SRC",
+            "priority": 0,
+            "tableReference": {
+               "referenceType": "parameter",
+               "parameterId": "SRC_TABLE_PARAM"
+            }
+         },
+         "LOOKUP_NODE": {
+            "nodeType": "step",
+            "version": 1,
+            "id": "LOOKUP_NODE",
+            "name": "Lookup",
+            "priority": 1,
+            "stepReference": {
+               "type": "uri",
+               "path": "/dataFlows/steps/fc266bc3-d90a-4d3c-84f2-65a29b4bd327"
+            },
+            "arguments": {
+               "outTable": {
+                  "referenceType": "outputPort",
+                  "portName": "outTable",
+                  "portIndex": 0,
+                  "arguments": {}
+               },
+               "lookupTables": [
+                  {
+                     "referenceType": "inputPort",
+                     "portName": "lookupTables",
+                     "portIndex": 0
+                  },
+                  {
+                     "referenceType": "inputPort",
+                     "portName": "lookupTables",
+                     "portIndex": 1
+                  }
+               ],
+               "inTable": {
+                  "referenceType": "inputPort",
+                  "portName": "inTable",
+                  "portIndex": 0
+               },
+               "sourceToLookupMap": [
+                  {
+                     "keyColumns": [
+                        {
+                           "foreignKeyColumn": {
+                              "referenceType": "column",
+                              "inputPort": "inTable",
+                              "inputPortIndex": 0,
+                              "columnName": "color_id_src",
+                              "portIndex": 0
+                           },
+                           "primaryKeyColumn": {
+                              "referenceType": "column",
+                              "inputPort": "lookupTables",
+                              "inputPortIndex": 0,
+                              "portIndex": 0,
+                              "columnName": "color_id_lkp"
+                           }
+                        }
+                     ]
+                  },
+                  {
+                     "keyColumns": [
+                        {
+                           "foreignKeyColumn": {
+                              "referenceType": "column",
+                              "inputPort": "inTable",
+                              "inputPortIndex": 0,
+                              "columnName": "dept_num_src",
+                              "portIndex": 0
+                           },
+                           "primaryKeyColumn": {
+                              "referenceType": "column",
+                              "inputPort": "lookupTables",
+                              "inputPortIndex": 1,
+                              "portIndex": 1,
+                              "columnName": "dept_num_lkp"
+                           }
+                        },
+                        {
+                           "foreignKeyColumn": {
+                              "referenceType": "column",
+                              "inputPort": "inTable",
+                              "inputPortIndex": 0,
+                              "columnName": "dept_id_src",
+                              "portIndex": 0
+                           },
+                           "primaryKeyColumn": {
+                              "referenceType": "column",
+                              "inputPort": "lookupTables",
+                              "inputPortIndex": 1,
+                              "portIndex": 1,
+                              "columnName": "dept_id_lkp"
+                           }
+                        }
+                     ]
+                  }
+               ],
+               "outputColumns": [
+                  {
+                     "referenceType": "columnDefinition",
+                     "outputPort": "outTable",
+                     "outputPortIndex": 0,
+                     "portIndex": 0,
+                     "columnDefinition": {
+                        "name": "color_id_tgt"
+                     },
+                     "impactedColumns": [
+                        {
+                           "columnReference": {
+                              "referenceType": "column",
+                              "columnName": "color_id_src",
+                              "inputPort": "inTable",
+                              "inputPortIndex": 0,
+                              "portIndex": 0
+                           }
+                        }
+                     ]
+                  },
+                  {
+                     "referenceType": "columnDefinition",
+                     "outputPort": "outTable",
+                     "outputPortIndex": 0,
+                     "columnDefinition": {
+                        "name": "color_desc_tgt"
+                     },
+                     "impactedColumns": [
+                        {
+                           "columnReference": {
+                              "referenceType": "column",
+                              "columnName": "color_desc_lkp",
+                              "inputPort": "lookupTables",
+                              "inputPortIndex": 0,
+                              "portIndex": 0
+                           }
+                        }
+                     ]
+                  },
+                  {
+                     "referenceType": "columnDefinition",
+                     "outputPort": "outTable",
+                     "outputPortIndex": 0,
+                     "portIndex": 0,
+                     "columnDefinition": {
+                        "name": "dept_id_tgt"
+                     },
+                     "impactedColumns": [
+                        {
+                           "columnReference": {
+                              "referenceType": "column",
+                              "columnName": "dept_id_src",
+                              "inputPort": "inTable",
+                              "inputPortIndex": 0,
+                              "portIndex": 0
+                           }
+                        }
+                     ]
+                  },
+                  {
+                     "referenceType": "columnDefinition",
+                     "outputPort": "outTable",
+                     "outputPortIndex": 0,
+                     "portIndex": 0,
+                     "columnDefinition": {
+                        "name": "dept_num_tgt"
+                     },
+                     "impactedColumns": [
+                        {
+                           "columnReference": {
+                              "referenceType": "column",
+                              "columnName": "dept_num_src",
+                              "inputPort": "inTable",
+                              "inputPortIndex": 0,
+                              "portIndex": 0
+                           }
+                        }
+                     ]
+                  },
+                  {
+                     "referenceType": "columnDefinition",
+                     "outputPort": "outTable",
+                     "outputPortIndex": 0,
+                     "columnDefinition": {
+                        "name": "dept_name_tgt"
+                     },
+                     "impactedColumns": [
+                        {
+                           "columnReference": {
+                              "referenceType": "column",
+                              "columnName": "dept_name_lkp",
+                              "inputPort": "lookupTables",
+                              "inputPortIndex": 1,
+                              "portIndex": 1
+                           }
+                        }
+                     ]
+                  },
+                  {
+                     "referenceType": "columnDefinition",
+                     "outputPort": "outTable",
+                     "outputPortIndex": 0,
+                     "columnDefinition": {
+                        "name": "dept_desc_tgt"
+                     },
+                     "impactedColumns": [
+                        {
+                           "columnReference": {
+                              "referenceType": "column",
+                              "columnName": "dept_desc_lkp",
+                              "inputPort": "lookupTables",
+                              "inputPortIndex": 1,
+                              "portIndex": 1
+                           }
+                        }
+                     ]
+                  }               ],
+               "whereFormattedFilter": "",
+               "whereQuickFilters":[
+                  {
+                     "tableAlias":"SRC",
+                     "matchCase":true,
+                     "quoteStrings":true,
+                     "inColumn":{
+                        "referenceType":"column",
+                        "version":1,
+                        "port":"inTable",
+                        "portIndex":0,
+                        "columnName":"color_id_src",
+                        "inputPort":"inTable",
+                        "inputPortIndex":0
+                     },
+                     "isCalculated":false,
+                     "value":[
+
+                     ],
+                     "operator":"notmissing",
+                     "logicalOperator":"OR",
+                     "useRaw":false,
+                     "calculatedColumn":null
+                  },
+                  {
+                     "tableAlias":"SRC",
+                     "matchCase":false,
+                     "quoteStrings":true,
+                     "inColumn":{
+                        "referenceType":"column",
+                        "version":1,
+                        "port":"inTable",
+                        "portIndex":0,
+                        "columnName":"dept_id_src",
+                        "inputPort":"inTables",
+                        "inputPortIndex":0
+                     },
+                     "isCalculated":false,
+                     "value":[
+                        "blue"
+                     ],
+                     "operator":"contains",
+                     "logicalOperator":"OR",
+                     "useRaw":false,
+                     "calculatedColumn":null
+                  },
+                  {
+                     "tableAlias":"L01",
+                     "matchCase":false,
+                     "quoteStrings":true,
+                     "inColumn":{
+                        "referenceType":"column",
+                        "version":1,
+                        "port":"lookupTables",
+                        "portIndex":0,
+                        "columnName":"color_id_lkp",
+                        "inputPort":"lookupTables",
+                        "inputPortIndex":0
+                     },
+                     "isCalculated":false,
+                     "value":[
+                        "yellow"
+                     ],
+                     "operator":"soundslike",
+                     "logicalOperator":"OR",
+                     "useRaw":false,
+                     "calculatedColumn":null
+                  },
+                  {
+                     "tableAlias":"L02",
+                     "matchCase":false,
+                     "quoteStrings":true,
+                     "inColumn":{
+                        "referenceType":"column",
+                        "version":1,
+                        "port":"lookupTables",
+                        "portIndex":1,
+                        "columnName":"dept_id_lkp",
+                        "inputPort":"lookupTables",
+                        "inputPortIndex":1
+                     },
+                     "isCalculated":false,
+                     "value":[
+
+                     ],
+                     "operator":"missing",
+                     "logicalOperator":"OR",
+                     "useRaw":false,
+                     "calculatedColumn":null
+                  },
+                  {
+                     "tableAlias":"L02",
+                     "matchCase":true,
+                     "quoteStrings":true,
+                     "inColumn":{
+                        "referenceType":"column",
+                        "version":1,
+                        "port":"lookupTables",
+                        "portIndex":1,
+                        "columnName":"dept_id_lkp",
+                        "inputPort":"lookupTables",
+                        "inputPortIndex":1
+                     },
+                     "isCalculated":false,
+                     "value":[
+                        "ENGG"
+                     ],
+                     "operator":"notcontains",
+                     "logicalOperator":"OR",
+                     "useRaw":false,
+                     "calculatedColumn":null
+                  },
+                  {
+                     "tableAlias":"L02",
+                     "matchCase":true,
+                     "quoteStrings":true,
+                     "inColumn":{
+                        "referenceType":"column",
+                        "version":1,
+                        "port":"lookupTables",
+                        "portIndex":1,
+                        "columnName":"dept_name_lkp",
+                        "inputPort":"lookupTables",
+                        "inputPortIndex":1
+                     },
+                     "isCalculated":false,
+                     "value":[
+                        "finance"
+                     ],
+                     "operator":"notsoundslike",
+                     "logicalOperator":"OR",
+                     "useRaw":false,
+                     "calculatedColumn":null
+                  },
+                  {
+                     "tableAlias":"L01",
+                     "matchCase":true,
+                     "quoteStrings":false,
+                     "inColumn":{
+                        "referenceType":"column",
+                        "version":1,
+                        "port":"lookupTables",
+                        "portIndex":0,
+                        "columnName":"color_desc_lkp",
+                        "inputPort":"lookupTables",
+                        "inputPortIndex":0
+                     },
+                     "isCalculated":false,
+                     "value":[
+
+                     ],
+                     "operator":"notmissing",
+                     "logicalOperator":"AND",
+                     "useRaw":true,
+                     "calculatedColumn":null
+                  },
+                  {
+                     "tableAlias":"SRC",
+                     "matchCase":true,
+                     "quoteStrings":true,
+                     "inColumn":{
+                        "referenceType":"column",
+                        "version":1,
+                        "port":"inTable",
+                        "portIndex":0,
+                        "columnName":"color_desc_src",
+                        "inputPort":"inTable",
+                        "inputPortIndex":0
+                     },
+                     "isCalculated":false,
+                     "value":[
+                        "Green",
+                        "Blue",
+                        "Yellow"
+                     ],
+                     "operator":"inlist",
+                     "logicalOperator":"OR",
+                     "useRaw":true,
+                     "calculatedColumn":null
+                  }
+               ]
+            }
+
+         },
+         "TARGET_TABLE_NODE": {
+            "nodeType": "table",
+            "version": 1,
+            "id": "TARGET_TABLE_NODE",
+            "name": "LKUP_TGT",
+            "priority": 2,
+            "tableReference": {
+               "referenceType": "parameter",
+               "parameterId": "TARGET_TABLE_PARAM"
+            },
+            "outputTableArguments": {
+               "advancedOptions": [],
+               "arguments": {}
+            }
+         },
+         "LOOKUP_TABLE_NODE_COLOR": {
+            "nodeType": "table",
+            "version": 1,
+            "id": "LOOKUP_TABLE_NODE_COLOR",
+            "name": "LKUP_TABLE_COLOR",
+            "priority": 3,
+            "tableReference": {
+               "referenceType": "parameter",
+               "parameterId": "LOOKUP_TABLE_PRM_COLOR"
+            }
+         },
+         "LOOKUP_TABLE_NODE_DEPT": {
+            "nodeType": "table",
+            "version": 1,
+            "id": "LOOKUP_TABLE_NODE_DEPT",
+            "name": "LKUP_TABLE_DEPT",
+            "priority": 3,
+            "tableReference": {
+               "referenceType": "parameter",
+               "parameterId": "LOOKUP_TABLE_PRM_DEPT"
+            }
+         }      },
+      "parameters": {
+         "SRC_TABLE_PARAM": {
+            "parameterType": "tableStructure",
+            "version": 2,
+            "id": "SRC_TABLE_PARAM",
+            "name": "LKUP_SRC",
+            "parameterUsage": "INPUT",
+            "defaultValue": {
+               "table": {
+                  "name": "LKUP_SRC",
+                  "providerId": "Compute",
+                  "dataSourceId": "Compute~fs~4a6ba347-1c31-42a1-a5c6-3d8cdf41fef0~fs~ORALIB",
+                  "type": "dataTable",
+                  "creationTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "modifiedTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "attributes": {
+                     "bookmarkLength": 16,
+                     "columnCount": 2,
+                     "compressionRoutine": "NO",
+                     "dataTableType": "table",
+                     "encoding": "Default",
+                     "engine": "ORACLE",
+                     "logicalRecordCount": -1,
+                     "physicalRecordCount": -1,
+                     "recordLength": 0,
+                     "rowCount": -1,
+                     "version": 2
+                  },
+                  "version": 2,
+                  "links": []
+               },
+               "source": {
+                  "id": "ORALIB",
+                  "name": "ORALIB",
+                  "providerId": "Compute",
+                  "parentId": "4a6ba347-1c31-42a1-a5c6-3d8cdf41fef0",
+                  "hasTables": true,
+                  "hasEngines": false,
+                  "creationTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "modifiedTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "attributes": {
+                     "concatenationCount": 0,
+                     "engineName": "ORACLE",
+                     "fileFormat": "",
+                     "flags": 0,
+                     "options": "PRESERVE_COL_NAMES=YES PRESERVE_TAB_NAMES=YES PATH=exadat12c SCHEMA=DMTEST USER=dmtest PASSWORD=dmtest;",
+                     "physicalName": "exadat12c",
+                     "readOnly": false,
+                     "version": 2
+                  },
+                  "version": 1,
+                  "links": []
+               },
+               "columns": []
+            },
+            "columns": [
+               {
+                  "name": "color_id_src",
+                  "label": "color_id_src",
+                  "index": 0,
+                  "type": "Char",
+                  "rawLength": 768,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$768.",
+                     "informat": "$768."
+                  }
+               },
+               {
+                  "name": "color_desc_src",
+                  "label": "color_desc_src",
+                  "index": 1,
+                  "type": "Char",
+                  "rawLength": 5120,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$5120.",
+                     "informat": "$5120."
+                  }
+               },
+               {
+                  "name": "dept_num_src",
+                  "label": "dept_num_src",
+                  "index": 0,
+                  "type": "Char",
+                  "rawLength": 768,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$768.",
+                     "informat": "$768."
+                  }
+               },
+               {
+                  "name": "dept_id_src",
+                  "label": "dept_id_src",
+                  "index": 0,
+                  "type": "Char",
+                  "rawLength": 768,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$768.",
+                     "informat": "$768."
+                  }
+               },
+               {
+                  "name": "dept_desc_src",
+                  "label": "dept_desc_src",
+                  "index": 1,
+                  "type": "Char",
+                  "rawLength": 5120,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$5120.",
+                     "informat": "$5120."
+                  }
+               }
+            ]
+         },
+         "LOOKUP_TABLE_PRM_COLOR": {
+            "parameterType": "tableStructure",
+            "version": 2,
+            "id": "LOOKUP_TABLE_PRM_COLOR",
+            "name": "LKUP_TABLE_COLOR",
+            "parameterUsage": "INPUT",
+            "defaultValue": {
+               "table": {
+                  "name": "LKUP_TABLE_COLOR",
+                  "providerId": "Compute",
+                  "dataSourceId": "Compute~fs~4a6ba347-1c31-42a1-a5c6-3d8cdf41fef0~fs~ORALIB",
+                  "type": "dataTable",
+                  "creationTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "modifiedTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "attributes": {
+                     "bookmarkLength": 16,
+                     "columnCount": 2,
+                     "compressionRoutine": "NO",
+                     "dataTableType": "table",
+                     "encoding": "Default",
+                     "engine": "ORACLE",
+                     "logicalRecordCount": -1,
+                     "physicalRecordCount": -1,
+                     "recordLength": 0,
+                     "rowCount": -1,
+                     "version": 2
+                  },
+                  "version": 2,
+                  "links": []
+               },
+               "source": {
+                  "id": "ORALIB",
+                  "name": "ORALIB",
+                  "providerId": "Compute",
+                  "parentId": "4a6ba347-1c31-42a1-a5c6-3d8cdf41fef0",
+                  "hasTables": true,
+                  "hasEngines": false,
+                  "creationTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "modifiedTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "attributes": {
+                     "concatenationCount": 0,
+                     "engineName": "ORACLE",
+                     "fileFormat": "",
+                     "flags": 0,
+                     "options": "PRESERVE_COL_NAMES=YES PRESERVE_TAB_NAMES=YES PATH=exadat12c SCHEMA=DMTEST USER=dmtest PASSWORD=dmtest;",
+                     "physicalName": "exadat12c",
+                     "readOnly": false,
+                     "version": 2
+                  },
+                  "version": 1,
+                  "links": []
+               },
+               "columns": []
+            },
+            "columns": [
+               {
+                  "name": "color_id_lkp",
+                  "label": "color_id_lkp",
+                  "index": 0,
+                  "type": "Char",
+                  "rawLength": 768,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$768.",
+                     "informat": "$768."
+                  }
+               },
+               {
+                  "name": "color_desc_lkp",
+                  "label": "color_desc_lkp",
+                  "index": 1,
+                  "type": "Char",
+                  "rawLength": 5120,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$5120.",
+                     "informat": "$5120."
+                  }
+               }
+            ]
+         },
+         "LOOKUP_TABLE_PRM_DEPT": {
+            "parameterType": "tableStructure",
+            "version": 2,
+            "id": "LOOKUP_TABLE_PRM_DEPT",
+            "name": "LKUP_TABLE_DEPT",
+            "parameterUsage": "INPUT",
+            "defaultValue": {
+               "table": {
+                  "name": "LKUP_TABLE_DEPT",
+                  "providerId": "Compute",
+                  "dataSourceId": "Compute~fs~4a6ba347-1c31-42a1-a5c6-3d8cdf41fef0~fs~ORALIB",
+                  "type": "dataTable",
+                  "creationTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "modifiedTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "attributes": {
+                     "bookmarkLength": 16,
+                     "columnCount": 2,
+                     "compressionRoutine": "NO",
+                     "dataTableType": "table",
+                     "encoding": "Default",
+                     "engine": "ORACLE",
+                     "logicalRecordCount": -1,
+                     "physicalRecordCount": -1,
+                     "recordLength": 0,
+                     "rowCount": -1,
+                     "version": 2
+                  },
+                  "version": 2,
+                  "links": []
+               },
+               "source": {
+                  "id": "ORALIB",
+                  "name": "ORALIB",
+                  "providerId": "Compute",
+                  "parentId": "4a6ba347-1c31-42a1-a5c6-3d8cdf41fef0",
+                  "hasTables": true,
+                  "hasEngines": false,
+                  "creationTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "modifiedTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "attributes": {
+                     "concatenationCount": 0,
+                     "engineName": "ORACLE",
+                     "fileFormat": "",
+                     "flags": 0,
+                     "options": "PRESERVE_COL_NAMES=YES PRESERVE_TAB_NAMES=YES PATH=exadat12c SCHEMA=DMTEST USER=dmtest PASSWORD=dmtest;",
+                     "physicalName": "exadat12c",
+                     "readOnly": false,
+                     "version": 2
+                  },
+                  "version": 1,
+                  "links": []
+               },
+               "columns": []
+            },
+            "columns": [
+               {
+                  "name": "dept_num_lkp",
+                  "label": "dept_num_lkp",
+                  "index": 0,
+                  "type": "Char",
+                  "rawLength": 768,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$768.",
+                     "informat": "$768."
+                  }
+               },
+               {
+                  "name": "dept_id_lkp",
+                  "label": "dept_id_lkp",
+                  "index": 0,
+                  "type": "Char",
+                  "rawLength": 768,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$768.",
+                     "informat": "$768."
+                  }
+               },
+               {
+                  "name": "dept_name_lkp",
+                  "label": "dept_name_lkp",
+                  "index": 1,
+                  "type": "Char",
+                  "rawLength": 5120,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$5120.",
+                     "informat": "$5120."
+                  }
+               },
+               {
+                  "name": "dept_desc_lkp",
+                  "label": "dept_desc_lkp",
+                  "index": 1,
+                  "type": "Char",
+                  "rawLength": 5120,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$5120.",
+                     "informat": "$5120."
+                  }
+               }
+            ]
+         },
+         "TARGET_TABLE_PARAM": {
+            "parameterType": "tableStructure",
+            "version": 2,
+            "id": "TARGET_TABLE_PARAM",
+            "name": "LKUP_TGT",
+            "parameterUsage": "INPUT_OUTPUT",
+            "defaultValue": {
+               "table": {
+                  "name": "LKUP_TGT",
+                  "providerId": "Compute",
+                  "dataSourceId": "Compute~fs~4a6ba347-1c31-42a1-a5c6-3d8cdf41fef0~fs~ORALIB",
+                  "type": "dataTable",
+                  "creationTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "modifiedTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "attributes": {
+                     "bookmarkLength": 16,
+                     "columnCount": 2,
+                     "compressionRoutine": "NO",
+                     "dataTableType": "table",
+                     "encoding": "Default",
+                     "engine": "ORACLE",
+                     "logicalRecordCount": -1,
+                     "physicalRecordCount": -1,
+                     "recordLength": 0,
+                     "rowCount": -1,
+                     "version": 2
+                  },
+                  "version": 2,
+                  "links": []
+               },
+               "source": {
+                  "id": "ORALIB",
+                  "name": "ORALIB",
+                  "providerId": "Compute",
+                  "parentId": "4a6ba347-1c31-42a1-a5c6-3d8cdf41fef0",
+                  "hasTables": true,
+                  "hasEngines": false,
+                  "creationTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "modifiedTimeStamp": "0001-01-01T00:00:00.000Z",
+                  "attributes": {
+                     "concatenationCount": 0,
+                     "engineName": "ORACLE",
+                     "fileFormat": "",
+                     "flags": 0,
+                     "options": "PRESERVE_COL_NAMES=YES PRESERVE_TAB_NAMES=YES PATH=exadat12c SCHEMA=DMTEST USER=dmtest PASSWORD=dmtest;",
+                     "physicalName": "exadat12c",
+                     "readOnly": false,
+                     "version": 2
+                  },
+                  "version": 1,
+                  "links": []
+               },
+               "columns": [
+                  {
+                     "name": "color_id_tgt",
+                     "label": "color_id_tgt",
+                     "index": 0,
+                     "type": "CHAR",
+                     "rawLength": 768,
+                     "formattedLength": 0,
+                     "version": 2,
+                     "links": [],
+                     "format": {
+                        "name": "$",
+                        "length": 768,
+                        "decimals": 0
+                     },
+                     "informat": {
+                        "name": "$",
+                        "length": 768,
+                        "decimals": 0
+                     },
+                     "attributes": {
+                        "format": "$768.",
+                        "informat": "$768."
+                     }
+                  },
+                  {
+                     "name": "color_desc_tgt",
+                     "label": "color_desc_tgt",
+                     "index": 1,
+                     "type": "CHAR",
+                     "rawLength": 5120,
+                     "formattedLength": 0,
+                     "version": 2,
+                     "links": [],
+                     "format": {
+                        "name": "$",
+                        "length": 5120,
+                        "decimals": 0
+                     },
+                     "informat": {
+                        "name": "$",
+                        "length": 5120,
+                        "decimals": 0
+                     },
+                     "attributes": {
+                        "format": "$5120.",
+                        "informat": "$5120."
+                     }
+                  },
+                  {
+                     "name": "dept_id_tgt",
+                     "label": "dept_id_tgt",
+                     "index": 0,
+                     "type": "CHAR",
+                     "rawLength": 768,
+                     "formattedLength": 0,
+                     "version": 2,
+                     "links": [],
+                     "format": {
+                        "name": "$",
+                        "length": 768,
+                        "decimals": 0
+                     },
+                     "informat": {
+                        "name": "$",
+                        "length": 768,
+                        "decimals": 0
+                     },
+                     "attributes": {
+                        "format": "$768.",
+                        "informat": "$768."
+                     }
+                  },
+                  {
+                     "name": "dept_desc_tgt",
+                     "label": "dept_desc_tgt",
+                     "index": 1,
+                     "type": "CHAR",
+                     "rawLength": 5120,
+                     "formattedLength": 0,
+                     "version": 2,
+                     "links": [],
+                     "format": {
+                        "name": "$",
+                        "length": 5120,
+                        "decimals": 0
+                     },
+                     "informat": {
+                        "name": "$",
+                        "length": 5120,
+                        "decimals": 0
+                     },
+                     "attributes": {
+                        "format": "$5120.",
+                        "informat": "$5120."
+                     }
+                  }
+               ]
+            },
+            "columns": [
+               {
+                  "name": "color_id_tgt",
+                  "label": "color_id_tgt",
+                  "index": 0,
+                  "type": "CHAR",
+                  "rawLength": 768,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$768.",
+                     "informat": "$768."
+                  }
+               },
+               {
+                  "name": "color_desc_tgt",
+                  "label": "color_desc_tgt",
+                  "index": 1,
+                  "type": "CHAR",
+                  "rawLength": 5120,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$5120.",
+                     "informat": "$5120."
+                  }
+               },
+               {
+                  "name": "dept_id_tgt",
+                  "label": "dept_id_tgt",
+                  "index": 0,
+                  "type": "CHAR",
+                  "rawLength": 768,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 768,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$768.",
+                     "informat": "$768."
+                  }
+               },
+               {
+                  "name": "dept_desc_tgt",
+                  "label": "dept_desc_tgt",
+                  "index": 1,
+                  "type": "CHAR",
+                  "rawLength": 5120,
+                  "formattedLength": 0,
+                  "version": 2,
+                  "links": [],
+                  "format": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "informat": {
+                     "name": "$",
+                     "length": 5120,
+                     "decimals": 0
+                  },
+                  "attributes": {
+                     "format": "$5120.",
+                     "informat": "$5120."
+                  }
+               }
+            ]
+         }
+      },
+      "connections": [
+         {
+            "sourcePort": {
+               "node": "SRC_TABLE_NODE",
+               "portName": "outTable",
+               "index": 0
+            },
+            "targetPort": {
+               "node": "LOOKUP_NODE",
+               "portName": "inTable",
+               "index": 0
+            }
+         },
+         {
+            "sourcePort": {
+               "node": "LOOKUP_TABLE_NODE_COLOR",
+               "portName": "outTable",
+               "index": 0
+            },
+            "targetPort": {
+               "node": "LOOKUP_NODE",
+               "portName": "lookupTables",
+               "index": 0
+            }
+         },
+         {
+            "sourcePort": {
+               "node": "LOOKUP_TABLE_NODE_DEPT",
+               "portName": "outTable",
+               "index": 0
+            },
+            "targetPort": {
+               "node": "LOOKUP_NODE",
+               "portName": "lookupTables",
+               "index": 1
+            }
+         },
+         {
+            "sourcePort": {
+               "node": "LOOKUP_NODE",
+               "portName": "outTable",
+               "index": 0
+            },
+            "targetPort": {
+               "node": "TARGET_TABLE_NODE",
+               "portName": "inTable",
+               "index": 0
+            }
+         }
+      ],
+      "stickyNotes": []
+   },
+   "executionBindings": {
+      "sessionId": "02bebb14-bbf2-424d-94e5-98130b027c4a-ses0000",
+      "contextId": "4a6ba347-1c31-42a1-a5c6-3d8cdf41fef0",
+      "environmentId": "Compute",
+      "tempTablePrefix": null,
+      "arguments": {
+      }
+   }
+}
