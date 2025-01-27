@@ -1,0 +1,25 @@
+func TestStepSynchronization(t *testing.T) {
+    t.Logf("Test starting...")
+
+    // Step 1: Goroutines performing some work
+    // ...
+
+    // Step 2: Goroutines starting after Step 1 is completed
+    // ...
+
+    t.Logf("Test finished...")
+}
+```"
+
+**Why this prompt is better:**
+
+*   **Alignment:** It directly asks for code that does what `step_boundary_test.go` actually does – synchronize goroutines using `sync.WaitGroup`.
+*   **Clear Purpose:** It focuses on demonstrating the sequencing of concurrent operations.
+*   **Specific Steps:** It breaks down the problem into distinct steps and explains how they should be performed.
+*   **Synchronization Emphasis:** It emphasizes the proper use of `sync.WaitGroup` for synchronization.
+*   **Test Specifics:** It uses `t.Logf`, asserts proper ordering of logs using `testing` package methods, and specifies how panics should be handled using `t.Fatalf`, and `recover`.
+*   **No Misdirection:**  It explicitly states what the code should *not* do (i.e., no file system search).
+*   **Example Code:** It includes a basic example of how a test case should look like.
+*   **Clarity:**  The language is more precise and focused on the core problem.
+
+This improved prompt will lead to a response that is much more relevant and useful, resulting in code that demonstrates the core concepts present in the original `step_boundary_test.go` file. It is also aligned with the best practices of testing in `Go`.
