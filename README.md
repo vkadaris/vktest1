@@ -5,5 +5,7 @@ git pull
 git rebase master
 make your changes
 
+git commit -a
+
 git push
 
