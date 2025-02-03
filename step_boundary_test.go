@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -54,17 +55,17 @@ func TestStepBoundaryLiterals(t *testing.T) {
 	}
 
 	exclusionList := ExclusionList{
-		FilePatterns: []string{"*_test.go", "*abcd???xyz*.txt", "i18n_messages_*.go"}, // file patterns to exclude
-		Extensions:   []string{".txt", ".md", ".json", ".yaml", "*_test.go", ".exe"},  // file extensions to exclude
+		FilePatterns: []string{"*_test.go", "*abcd???xyz*.txt", "i18n_messages_*.go"},
+		Extensions:   []string{".txt", ".md", ".json", ".yaml", "*_test.go", ".exe"},
 		Directories: []string{
-			filepath.Join(projectRoot, "vendor"), // Example exclusion by directory
+			filepath.Join(projectRoot, "vendor"),
 			filepath.Join(projectRoot, "services", "codegen", "testdata"),
 			filepath.Join(projectRoot, "services", "codetoflow", "testdata"),
 			filepath.Join(projectRoot, "templates"),
 			filepath.Join(projectRoot, "build"),
 			filepath.Join(projectRoot, ".git"),
 			filepath.Join(projectRoot, "docs"),
-		}, // directories to exclude
+		},
 	}
 
 	err := searchAndReport(projectRoot, stringLiterals, excludeLiterals, exclusionList, outputFile)
@@ -102,43 +103,44 @@ func searchAndReport(projectRoot string, stringLiterals []string, excludeLiteral
 	excludedItems := []ExclusionReason{}
 	fileMatches := make(map[string][]string) // To store string literal matches per file
 
-	// Walk the project directory
-	err = filepath.Walk(projectRoot, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			// Handle walk errors, like permission issues
-			fmt.Fprintf(os.Stderr, "Error accessing path: %s, error: %v\n", path, err)
-			return nil // Continue walking
-		}
-		// Skip directories
-		if info.IsDir() {
-			if reason, excluded := isDirectoryExcluded(path, exclusionList.Directories); excluded {
-				fmt.Printf("Skipping directory: %s, Reason: %s\n", path, reason)
-				excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
-				return filepath.SkipDir // Skip this entire directory
-			}
-			return nil
-		}
+    // Walk the project directory
+    err = filepath.WalkDir(projectRoot, func(path string, d fs.DirEntry, err error) error {
+        if err != nil {
+            // Handle walk errors, like permission issues
+            fmt.Fprintf(os.Stderr, "Error accessing path: %s, error: %v\n", path, err)
+            return nil // Continue walking
+        }
 
-		// check for file exclusions
-		if reason, excluded := isFileExcluded(path, exclusionList.FilePatterns, exclusionList.Extensions); excluded {
-			fmt.Printf("Skipping file: %s, Reason: %s\n", path, reason)
-			excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
-			return nil // Skip this file
-		}
+        // Skip directories
+        if d.IsDir() {
+            if reason, excluded := isDirectoryExcluded(path, exclusionList.Directories); excluded {
+                fmt.Printf("Skipping directory: %s, Reason: %s\n", path, reason)
+                excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
+                return filepath.SkipDir // Skip this entire directory
+            }
+            return nil
+        }
 
-		// Process the file
-		matches, err := processFile(path, stringLiterals, excludeLiterals, commentRegex)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error processing file: %s, error: %v\n", path, err)
-		}
-		if len(matches) > 0 {
-			fileMatches[path] = matches
-		}
-		return nil
+        // check for file exclusions
+        if reason, excluded := isFileExcluded(path, exclusionList.FilePatterns, exclusionList.Extensions); excluded {
+            fmt.Printf("Skipping file: %s, Reason: %s\n", path, reason)
+            excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
+            return nil // Skip this file
+        }
 
-	})
+        // Process the file
+        matches, err := processFile(path, stringLiterals, excludeLiterals, commentRegex)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Error processing file: %s, error: %v\n", path, err)
+        }
+        if len(matches) > 0 {
+            fileMatches[path] = matches
+        }
+        return nil
+    })
+
 	if err != nil {
-		return fmt.Errorf("error during filepath.Walk: %w", err)
+		return fmt.Errorf("error during filepath.WalkDir: %w", err)
 	}
 
 	// Write excluded files and directories to the output file

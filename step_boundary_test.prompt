@@ -1,25 +1,35 @@
-func TestStepSynchronization(t *testing.T) {
-    t.Logf("Test starting...")
+Generate a Go test file named `step_boundary_test.go` that performs the following:
 
-    // Step 1: Goroutines performing some work
-    // ...
+The test should define a test function called `TestStepBoundaryLiterals`. This function should:
 
-    // Step 2: Goroutines starting after Step 1 is completed
-    // ...
+1.  **Define Project and Output Paths**: Specify a project root directory (e.g., `c:\dev\dmv\viya-data-flows`) and an output file path (e.g., `c:\dev\dmv\viya-data-flows\services\codegen\testdata\status_handling\step_boundaries.txt`).
 
-    t.Logf("Test finished...")
-}
-```"
+2.  **Define String Literals**: Create a slice of strings that represent literals to search for within project files (e.g., `proc `, `data `, `filename `, `libname `).
 
-**Why this prompt is better:**
+3.  **Define Exclusion Literals**: Create a slice of strings that represent literals to exclude within a line from being reported, even if the main literals are found (e.g. `loads data from`, ` updates data from`, etc. use the example in previous golang code).
 
-*   **Alignment:** It directly asks for code that does what `step_boundary_test.go` actually does – synchronize goroutines using `sync.WaitGroup`.
-*   **Clear Purpose:** It focuses on demonstrating the sequencing of concurrent operations.
-*   **Specific Steps:** It breaks down the problem into distinct steps and explains how they should be performed.
-*   **Synchronization Emphasis:** It emphasizes the proper use of `sync.WaitGroup` for synchronization.
-*   **Test Specifics:** It uses `t.Logf`, asserts proper ordering of logs using `testing` package methods, and specifies how panics should be handled using `t.Fatalf`, and `recover`.
-*   **No Misdirection:**  It explicitly states what the code should *not* do (i.e., no file system search).
-*   **Example Code:** It includes a basic example of how a test case should look like.
-*   **Clarity:**  The language is more precise and focused on the core problem.
+4.  **Define Exclusion List**:
+    *   Create a struct called `ExclusionList` with fields `FilePatterns`, `Extensions`, and `Directories`, all of which are string slices.
+    *   Populate an `ExclusionList` with file patterns to exclude (e.g., `*_test.go`, `*abcd???xyz*.txt`, `i18n_messages_*.go`), file extensions to exclude (e.g., `.txt`, `.md`, `.json`, `.yaml`, `*_test.go`, `.exe`), and directories to exclude (e.g., `vendor`, `services/codegen/testdata`, `services/codetoflow/testdata`, `templates`, `build`, `.git`, `docs`). Use `filepath.Join` for creating the paths for each directory.
+5. **String Literal Search**:
+    * Create a function called `searchAndReport` that accepts a `projectRoot` string, `stringLiterals` slice of strings, `excludeLiterals` slice of strings, `exclusionList` ExclusionList, and `outputFile` string as parameters.
+    * This function should:
+        *   Create an output file at the specified path.
+        *   Use `filepath.WalkDir` to recursively traverse the project directory.
+        *   Inside the `WalkDir` callback:
+            *   Implement logic to skip files or directories that match the `ExclusionList`. If a file or a directory is excluded, collect the file path and the exclusion reason in slice of structs called `ExclusionReason`.
+            *   Create a function called `processFile` that opens the file, reads it line by line, and searches for the `stringLiterals`.
+            *   Inside `processFile` function, ignore the literals if they are in a commented section of the line. Use regular expression to remove the comments `(?m)(//.*|/\*.*?\*/)`.
+            *   Report the line number, column number, matched string literal, and the full line in the output file and in the console, if the line contains a string literal from the list but not containing literals in `excludeLiterals`. Use a regular expression for word boundary to match only whole words.
+        *   After traversing the files and directories:
+            *   Write the list of excluded files and directories along with their exclusion reasons to the output file.
+            *   Write the matches of string literals found per file, with the file path, line number, and matched string.
+            *   Add a summary at the end indicating how many matches were found per file.
+        *   Return any errors encountered.
 
-This improved prompt will lead to a response that is much more relevant and useful, resulting in code that demonstrates the core concepts present in the original `step_boundary_test.go` file. It is also aligned with the best practices of testing in `Go`.
+6.  **Call the Search Function**: Call `searchAndReport` within the `TestStepBoundaryLiterals` function and use `t.Fatalf` if there are any errors. Use `t.Log` if everything goes well.
+7. **Output**: The output of the search should be written to the output file with clear formatting. Include file paths, line numbers, matched strings, and the content of the matching line, along with the summary and the excluded files and directories.
+
+Ensure that all file operations are handled with proper error checking. Use standard Go packages such as `os`, `path/filepath`, `bufio`, `io`, `regexp`, `sort` and `testing`.
+
+The test should be runnable using `go test`.
