@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -26,11 +27,35 @@ func TestStepBoundaryLiterals(t *testing.T) {
 		"loads data from",
 		"updates data from",
 		"in a data set",
+		"for sca proc code execution",
+		" data into",
+		"in proc python the",
+		" using proc ",
+		"a data flow",
+		"data set options are",
+		"data set contains",
+		"rows in the data set",
+		"data sets only",
+		"one or more SAS data",
+		"array of SAS data",
+		"requires a proc contents",
+		"as data step",
+		"generates data flow",
+		" data action",
+		"data flow step",
+		"data step in CAS utility",
+		"operations in a data flow",
+		" proc casutil utility ",
+		"set as data set options",
+		"different data providers",
+		"data flow service uses",
+		"(data view)",
+		"is data step",
 	}
 
 	exclusionList := ExclusionList{
-		FilePatterns: []string{"*_test.go", "*abcd???xyz*.txt", "i18n_messages_*.go"}, // Example exclusion by file pattern
-		Extensions:   []string{".txt", ".md", ".json", ".yaml", "*_test.go", ".exe"},  // Example exclusion by extension
+		FilePatterns: []string{"*_test.go", "*abcd???xyz*.txt", "i18n_messages_*.go"}, // file patterns to exclude
+		Extensions:   []string{".txt", ".md", ".json", ".yaml", "*_test.go", ".exe"},  // file extensions to exclude
 		Directories: []string{
 			filepath.Join(projectRoot, "vendor"), // Example exclusion by directory
 			filepath.Join(projectRoot, "services", "codegen", "testdata"),
@@ -39,7 +64,7 @@ func TestStepBoundaryLiterals(t *testing.T) {
 			filepath.Join(projectRoot, "build"),
 			filepath.Join(projectRoot, ".git"),
 			filepath.Join(projectRoot, "docs"),
-		}, // Example exclusion by directory
+		}, // directories to exclude
 	}
 
 	err := searchAndReport(projectRoot, stringLiterals, excludeLiterals, exclusionList, outputFile)
@@ -50,11 +75,17 @@ func TestStepBoundaryLiterals(t *testing.T) {
 
 }
 
-// ExclusionList defines criteria for excluding files/directories during the search.
+// ExclusionList defines criteria for excluding file patterns, file extensions and directories during the search.
 type ExclusionList struct {
 	FilePatterns []string
 	Extensions   []string
 	Directories  []string
+}
+
+// ExclusionReason struct to hold the exclusion reason.
+type ExclusionReason struct {
+	Path   string
+	Reason string
 }
 
 // searchAndReport performs the file traversal, string searching, and reporting.
@@ -68,8 +99,8 @@ func searchAndReport(projectRoot string, stringLiterals []string, excludeLiteral
 	// regex to remove comments
 	commentRegex := regexp.MustCompile(`(?m)(//.*|/\*.*?\*/)`)
 
-	excludedFiles := []string{}
-	excludedDirectories := []string{}
+	excludedItems := []ExclusionReason{}
+	fileMatches := make(map[string][]string) // To store string literal matches per file
 
 	// Walk the project directory
 	err = filepath.Walk(projectRoot, func(path string, info os.FileInfo, err error) error {
@@ -80,24 +111,28 @@ func searchAndReport(projectRoot string, stringLiterals []string, excludeLiteral
 		}
 		// Skip directories
 		if info.IsDir() {
-			if isDirectoryExcluded(path, exclusionList.Directories) {
-				fmt.Printf("Skipping directory: %s\n", path)
-				excludedDirectories = append(excludedDirectories, path)
+			if reason, excluded := isDirectoryExcluded(path, exclusionList.Directories); excluded {
+				fmt.Printf("Skipping directory: %s, Reason: %s\n", path, reason)
+				excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
 				return filepath.SkipDir // Skip this entire directory
 			}
 			return nil
 		}
 
 		// check for file exclusions
-		if isFileExcluded(path, exclusionList.FilePatterns, exclusionList.Extensions) {
-			fmt.Printf("Skipping file: %s\n", path)
-			excludedFiles = append(excludedFiles, path)
+		if reason, excluded := isFileExcluded(path, exclusionList.FilePatterns, exclusionList.Extensions); excluded {
+			fmt.Printf("Skipping file: %s, Reason: %s\n", path, reason)
+			excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
 			return nil // Skip this file
 		}
+
 		// Process the file
-		err = processFile(path, stringLiterals, excludeLiterals, output, commentRegex)
+		matches, err := processFile(path, stringLiterals, excludeLiterals, commentRegex)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error processing file: %s, error: %v\n", path, err)
+		}
+		if len(matches) > 0 {
+			fileMatches[path] = matches
 		}
 		return nil
 
@@ -107,36 +142,53 @@ func searchAndReport(projectRoot string, stringLiterals []string, excludeLiteral
 	}
 
 	// Write excluded files and directories to the output file
-	fmt.Fprintln(output, "\nExcluded Files:")
-	for _, file := range excludedFiles {
-		fmt.Fprintln(output, file)
+	fmt.Fprintln(output, "\nExcluded Files and Directories:")
+	for _, item := range excludedItems {
+		fmt.Fprintf(output, "Path: %s, Reason: %s\n", item.Path, item.Reason)
 	}
 
-	fmt.Fprintln(output, "\nExcluded Directories:")
-	for _, dir := range excludedDirectories {
-		fmt.Fprintln(output, dir)
+	fmt.Fprintln(output, "\nString Literal Matches:")
+
+	var files []string
+	for file := range fileMatches {
+		files = append(files, file)
+	}
+	sort.Strings(files)
+	// Write the matches group by file.
+	for _, file := range files {
+		fmt.Fprintf(output, "File: %s\n", file)
+		for _, match := range fileMatches[file] {
+			fmt.Fprintln(output, match)
+		}
+	}
+
+	// Add Summary
+	fmt.Fprintln(output, "\nSummary:")
+	for _, file := range files {
+		fmt.Fprintf(output, "File: %s, Matches Found: %d\n", file, len(fileMatches[file]))
 	}
 
 	return nil
 }
 
 // processFile reads a file, searches for string literals, and reports findings.
-func processFile(filePath string, stringLiterals []string, excludeLiterals []string, output io.Writer, commentRegex *regexp.Regexp) error {
+func processFile(filePath string, stringLiterals []string, excludeLiterals []string, commentRegex *regexp.Regexp) ([]string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		return fmt.Errorf("error opening file: %w", err)
+		return nil, fmt.Errorf("error opening file: %w", err)
 	}
 	defer file.Close()
 
 	reader := bufio.NewReader(file)
 	lineNumber := 1
+	var matches []string
 	for {
 		line, err := reader.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
 				break // End of file
 			}
-			return fmt.Errorf("error reading line: %w", err)
+			return nil, fmt.Errorf("error reading line: %w", err)
 		}
 
 		// Remove comments
@@ -145,9 +197,9 @@ func processFile(filePath string, stringLiterals []string, excludeLiterals []str
 		for _, literal := range stringLiterals {
 			// Create a regex for word boundary matching
 			re := regexp.MustCompile(fmt.Sprintf(`\b%s\b`, regexp.QuoteMeta(literal)))
-			matches := re.FindStringIndex(lineWithoutComments)
+			matchIndexes := re.FindStringIndex(lineWithoutComments)
 
-			if matches != nil {
+			if matchIndexes != nil {
 				// Check if the line contains any exclude literals
 				excludeMatch := false
 				for _, excludeLiteral := range excludeLiterals {
@@ -158,54 +210,52 @@ func processFile(filePath string, stringLiterals []string, excludeLiterals []str
 				}
 				// if not excluded, then report.
 				if !excludeMatch {
-					colNumber := matches[0]
-					fmt.Printf("File: %s\n", filePath)
-					fmt.Printf("  Line: %d, Column: %d\n", lineNumber, colNumber+1)
-					fmt.Printf("  Match: %s\n", literal)
-					fmt.Printf("  Line: %s\n", line)
+					colNumber := matchIndexes[0]
 
-					fmt.Fprintf(output, "File: %s\n", filePath)
-					fmt.Fprintf(output, "  Line: %d, Column: %d\n", lineNumber, colNumber+1)
-					fmt.Fprintf(output, "  Match: %s\n", literal)
-					fmt.Fprintf(output, "  Line: %s\n", line)
+					matchStr := fmt.Sprintf("  Row: %d, Column: %d\n", lineNumber, colNumber+1)
+					matchStr = matchStr + fmt.Sprintf("  Match: %s\n", literal)
+					matchStr = matchStr + fmt.Sprintf("  Line: %s\n", line)
+					fmt.Printf("File: %s\n", filePath)
+					fmt.Printf(matchStr)
+					matches = append(matches, matchStr)
 				}
 			}
 
 		}
 		lineNumber++
 	}
-	return nil
+	return matches, nil
 }
 
 // isFileExcluded checks if a file should be excluded based on name or extension.
-func isFileExcluded(filePath string, filePatterns []string, extensions []string) bool {
+func isFileExcluded(filePath string, filePatterns []string, extensions []string) (string, bool) {
 	fileName := filepath.Base(filePath)
 
 	// Check for wildcard matches
 	for _, pattern := range filePatterns {
 		matched, err := filepath.Match(pattern, fileName) // match against file name
 		if err == nil && matched {
-			return true
+			return fmt.Sprintf("Matched file pattern: %s", pattern), true
 		}
 	}
 	// Check for extension matches
 	fileExt := filepath.Ext(fileName)
 	for _, ext := range extensions {
 		if fileExt == ext {
-			return true
+			return fmt.Sprintf("Matched extension: %s", ext), true
 		}
 	}
-	return false
+	return "", false
 }
 
 // isDirectoryExcluded checks if a directory should be excluded.
-func isDirectoryExcluded(dirPath string, excludedDirs []string) bool {
+func isDirectoryExcluded(dirPath string, excludedDirs []string) (string, bool) {
 	cleanedDirPath := filepath.Clean(dirPath)
 	for _, excludedDir := range excludedDirs {
 		cleanedExcludedDir := filepath.Clean(excludedDir)
 		if strings.HasPrefix(cleanedDirPath, cleanedExcludedDir) {
-			return true
+			return fmt.Sprintf("Matched directory: %s", excludedDir), true
 		}
 	}
-	return false
+	return "", false
 }
