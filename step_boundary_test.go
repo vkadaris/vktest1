@@ -15,7 +15,10 @@ import (
 
 // TestStepBoundaryLiterals searches for specific string literals in the project.
 func TestStepBoundaryLiterals(t *testing.T) {
-	projectRoot := `c:\dev\dmv\viya-data-flows`
+	projectRoots := []string{
+		`c:\dev\dmv\viya-data-flows`,
+		`c:\dev\dmv\studio-steps`,
+	}
 	outputFile := `c:\dev\dmv\viya-data-flows\services\codegen\testdata\status_handling\step_boundaries.txt`
 	stringLiterals := []string{
 		"proc ",
@@ -58,17 +61,28 @@ func TestStepBoundaryLiterals(t *testing.T) {
 		FilePatterns: []string{"*_test.go", "*abcd???xyz*.txt", "i18n_messages_*.go"},
 		Extensions:   []string{".txt", ".md", ".json", ".yaml", "*_test.go", ".exe"},
 		Directories: []string{
-			filepath.Join(projectRoot, "vendor"),
-			filepath.Join(projectRoot, "services", "codegen", "testdata"),
-			filepath.Join(projectRoot, "services", "codetoflow", "testdata"),
-			filepath.Join(projectRoot, "templates"),
-			filepath.Join(projectRoot, "build"),
-			filepath.Join(projectRoot, ".git"),
-			filepath.Join(projectRoot, "docs"),
+			filepath.Join(projectRoots[0], "services", "codegen", "testdata"), 
+			filepath.Join(projectRoots[0], "services", "codetoflow", "testdata"), 
+			filepath.Join(projectRoots[0], "templates"), 
+			filepath.Join(projectRoots[0], "build"), 
+			filepath.Join(projectRoots[0], ".git"), 
+			filepath.Join(projectRoots[0], "docs"), 
+			filepath.Join(projectRoots[1], ".chglog"), 
+			filepath.Join(projectRoots[1], ".idea"), 
+			filepath.Join(projectRoots[1], "ci"), 
+			filepath.Join(projectRoots[1], "dev"), 
+			filepath.Join(projectRoots[1], "i18n"), 
+			filepath.Join(projectRoots[1], "k8s"),
+			filepath.Join(projectRoots[1], "meta"),
+			filepath.Join(projectRoots[1], "sage"),
+			filepath.Join(projectRoots[1], "saspackage"),
+			filepath.Join(projectRoots[1], "services"),
+			filepath.Join(projectRoots[1], "tools"),
+			filepath.Join(projectRoots[1], "unittest_framework"),
 		},
 	}
 
-	err := searchAndReport(projectRoot, stringLiterals, excludeLiterals, exclusionList, outputFile)
+	err := searchAndReport(projectRoots, stringLiterals, excludeLiterals, exclusionList, outputFile)
 	if err != nil {
 		t.Fatalf("Error during search: %v", err)
 	}
@@ -90,7 +104,7 @@ type ExclusionReason struct {
 }
 
 // searchAndReport performs the file traversal, string searching, and reporting.
-func searchAndReport(projectRoot string, stringLiterals []string, excludeLiterals []string, exclusionList ExclusionList, outputFile string) error {
+func searchAndReport(projectRoots []string, stringLiterals []string, excludeLiterals []string, exclusionList ExclusionList, outputFile string) error {
 	output, err := os.Create(outputFile)
 	if err != nil {
 		return fmt.Errorf("error creating output file: %w", err)
@@ -103,44 +117,48 @@ func searchAndReport(projectRoot string, stringLiterals []string, excludeLiteral
 	excludedItems := []ExclusionReason{}
 	fileMatches := make(map[string][]string) // To store string literal matches per file
 
-    // Walk the project directory
-    err = filepath.WalkDir(projectRoot, func(path string, d fs.DirEntry, err error) error {
-        if err != nil {
-            // Handle walk errors, like permission issues
-            fmt.Fprintf(os.Stderr, "Error accessing path: %s, error: %v\n", path, err)
-            return nil // Continue walking
-        }
+	// Iterate through each project root
+	for _, projectRoot := range projectRoots {
 
-        // Skip directories
-        if d.IsDir() {
-            if reason, excluded := isDirectoryExcluded(path, exclusionList.Directories); excluded {
-                fmt.Printf("Skipping directory: %s, Reason: %s\n", path, reason)
-                excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
-                return filepath.SkipDir // Skip this entire directory
-            }
-            return nil
-        }
+		// Walk the project directory
+		err = filepath.WalkDir(projectRoot, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				// Handle walk errors, like permission issues
+				fmt.Fprintf(os.Stderr, "Error accessing path: %s, error: %v\n", path, err)
+				return nil // Continue walking
+			}
 
-        // check for file exclusions
-        if reason, excluded := isFileExcluded(path, exclusionList.FilePatterns, exclusionList.Extensions); excluded {
-            fmt.Printf("Skipping file: %s, Reason: %s\n", path, reason)
-            excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
-            return nil // Skip this file
-        }
+			// Skip directories
+			if d.IsDir() {
+				if reason, excluded := isDirectoryExcluded(path, exclusionList.Directories); excluded {
+					fmt.Printf("Skipping directory: %s, Reason: %s\n", path, reason)
+					excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
+					return filepath.SkipDir // Skip this entire directory
+				}
+				return nil
+			}
 
-        // Process the file
-        matches, err := processFile(path, stringLiterals, excludeLiterals, commentRegex)
-        if err != nil {
-            fmt.Fprintf(os.Stderr, "Error processing file: %s, error: %v\n", path, err)
-        }
-        if len(matches) > 0 {
-            fileMatches[path] = matches
-        }
-        return nil
-    })
+			// check for file exclusions
+			if reason, excluded := isFileExcluded(path, exclusionList.FilePatterns, exclusionList.Extensions); excluded {
+				fmt.Printf("Skipping file: %s, Reason: %s\n", path, reason)
+				excludedItems = append(excludedItems, ExclusionReason{Path: path, Reason: reason})
+				return nil // Skip this file
+			}
 
-	if err != nil {
-		return fmt.Errorf("error during filepath.WalkDir: %w", err)
+			// Process the file
+			matches, err := processFile(path, stringLiterals, excludeLiterals, commentRegex)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error processing file: %s, error: %v\n", path, err)
+			}
+			if len(matches) > 0 {
+				fileMatches[path] = matches
+			}
+			return nil
+		})
+
+		if err != nil {
+			return fmt.Errorf("error during filepath.WalkDir: %w", err)
+		}
 	}
 
 	// Write excluded files and directories to the output file
