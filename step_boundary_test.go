@@ -61,17 +61,17 @@ func TestStepBoundaryLiterals(t *testing.T) {
 		FilePatterns: []string{"*_test.go", "*abcd???xyz*.txt", "i18n_messages_*.go"},
 		Extensions:   []string{".txt", ".md", ".json", ".yaml", "*_test.go", ".exe"},
 		Directories: []string{
-			filepath.Join(projectRoots[0], "services", "codegen", "testdata"), 
-			filepath.Join(projectRoots[0], "services", "codetoflow", "testdata"), 
-			filepath.Join(projectRoots[0], "templates"), 
-			filepath.Join(projectRoots[0], "build"), 
-			filepath.Join(projectRoots[0], ".git"), 
-			filepath.Join(projectRoots[0], "docs"), 
-			filepath.Join(projectRoots[1], ".chglog"), 
-			filepath.Join(projectRoots[1], ".idea"), 
-			filepath.Join(projectRoots[1], "ci"), 
-			filepath.Join(projectRoots[1], "dev"), 
-			filepath.Join(projectRoots[1], "i18n"), 
+			filepath.Join(projectRoots[0], "services", "codegen", "testdata"),
+			filepath.Join(projectRoots[0], "services", "codetoflow", "testdata"),
+			filepath.Join(projectRoots[0], "templates"),
+			filepath.Join(projectRoots[0], "build"),
+			filepath.Join(projectRoots[0], ".git"),
+			filepath.Join(projectRoots[0], "docs"),
+			filepath.Join(projectRoots[1], ".chglog"),
+			filepath.Join(projectRoots[1], ".idea"),
+			filepath.Join(projectRoots[1], "ci"),
+			filepath.Join(projectRoots[1], "dev"),
+			filepath.Join(projectRoots[1], "i18n"),
 			filepath.Join(projectRoots[1], "k8s"),
 			filepath.Join(projectRoots[1], "meta"),
 			filepath.Join(projectRoots[1], "sage"),
@@ -215,8 +215,9 @@ func processFile(filePath string, stringLiterals []string, excludeLiterals []str
 		lineWithoutComments := commentRegex.ReplaceAllString(line, "")
 
 		for _, literal := range stringLiterals {
-			// Create a regex for word boundary matching
-			re := regexp.MustCompile(fmt.Sprintf(`\b%s\b`, regexp.QuoteMeta(literal)))
+			// Create a regex for word boundary matching and space significance
+			regexPattern := fmt.Sprintf(`\b%s(?![\w])`, regexp.QuoteMeta(literal))
+			re := regexp.MustCompile(regexPattern)
 			matchIndexes := re.FindStringIndex(lineWithoutComments)
 
 			if matchIndexes != nil {
